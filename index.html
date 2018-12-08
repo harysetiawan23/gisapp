@@ -1,4 +1,3 @@
-<!DOCTYPE>
 <html>
     <head>
         <title>
@@ -24,7 +23,7 @@
 
             .map_normal{
               height: 100%;
-              width: 100vw;
+              width: 100%;
             }
 
             .panorama{
@@ -95,9 +94,12 @@
                       </a>
                       <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" onclick="initViewSideBySide()">Stret View Side by Side</a>
-                        <a class="dropdown-item" onclick="initPano()">Street View Events</a>
+                        <a class="dropdown-item" onclick="initPanoEvent()">Street View Events</a>
+                        <a class="dropdown-item" onclick="initPanoControl()">Street View Controls</a>
+                        <a class="dropdown-item" onclick="initDirectAccess()">Directly Accessing Street View Data</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
+                        <a class="dropdown-item" onclick="customPano()">Custom Street View Panoramas</a>
+                        <a class="dropdown-item" onclick="initializeCustomStreetPano()">Custom Street View Panorama Tiles</a>
                       </div>
                     </li>
                         
@@ -105,14 +107,20 @@
                      
             </div>
         </nav>
-        <div id="view_base" class="row">
+        <div id="base" class="row">
           <div id="map"></div>
           <div id="pano"></div>
         </div>
 
-        <div id="stret_view_pano">
+
+        <div id="stret-view-side-by-side" class="row">
+            <div id="map_2"></div>
+            <div id="pano_2"></div>
+          </div>
+
+        <div id="stret_view_event">
           <div class="row">
-              <div id="pano_view_2"></div>
+              <div id="pano_3"></div>
               <div id="floating-panel">
               <table>
                 <tr>
@@ -145,7 +153,7 @@
 
     <!-- Google Maps API -->
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBh6SXVqoNLFgM_ey8uK1B2oLg2M5Cu9bs&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBh6SXVqoNLFgM_ey8uK1B2oLg2M5Cu9bs&callback=initTraffictMap">
     </script>
 
 
@@ -153,8 +161,16 @@
     <!-- Traffict Layer -->
     <script>
         function initTraffictMap() {
-          $('#view_base').show();
+          // LAYOUT CONTROLL
+          $('#base').show();
+          $('#stret-view-side-by-side').hide();
+          $('#stret_view_event').hide()
+
+
+
+          // CLASS INITIATOR
           $("#map").addClass("map_normal");
+
           var map = new google.maps.Map(document.getElementById('map'), {
               zoom: 13,
               center: {lat: 34.04924594193164, lng: -118.24104309082031}
@@ -165,8 +181,14 @@
         }
 
         function initTransitMap() {
-          $('#view_base').show();
+          // LAYOUT CONTROLL
+          $('#base').show();
+          $('#stret-view-side-by-side').hide();
+          $('#stret_view_event').hide()
+
+          // CLASS INITIATOR
           $("#map").addClass("map_normal");
+
           var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 13,
             center: {lat: 51.501904, lng: -0.115871}
@@ -177,8 +199,14 @@
         }
 
         function initByciclingMap() {
+          // LAYOUT CONTROLL
+          $('#base').show();
+          $('#stret-view-side-by-side').hide();
+          $('#stret_view_event').hide()
+
+          // CLASS INITIATOR
           $("#map").addClass("map_normal");
-          $('#view_base').show();
+
           var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 14,
             center: {lat: 42.3726399, lng: -71.1096528}
@@ -189,19 +217,24 @@
         }
 
         function initViewSideBySide() {
-          $("#map").addClass("panorama");
-          $("#pano").addClass("panorama");
-          $('#view_base').show();
+          // LAYOUT CONTROLL
+          $('#base').hide();
+          $('#stret-view-side-by-side').show();
+          $('#stret_view_event').hide()
+
+          // CLASS INITIATOR
+          $("#map_2").addClass("panorama");
+          $("#pano_2").addClass("panorama");
 
           var fenway = {lat: 42.345573, lng: -71.098326};
 
-          var map = new google.maps.Map(document.getElementById('map'), {
+          var map = new google.maps.Map(document.getElementById('map_2'), {
             center: fenway,
             zoom: 14
           });
 
           var panorama = new google.maps.StreetViewPanorama(
-              document.getElementById('pano'), {
+              document.getElementById('pano_2'), {
                 position: fenway,
                 pov: {
                   heading: 34,
@@ -211,14 +244,41 @@
           map.setStreetView(panorama);
         }
 
-        function initPano() {
-          
-          $('#view_base').hide();
-          $("#pano_view_2").addClass("panorama");
+        function initPanoControl() {
+           // LAYOUT CONTROLL
+          $('#base').show();
+          $('#stret-view-side-by-side').hide();
+          $('#stret_view_event').hide()
+
+          // CLASS INITIATOR
+          $("#map").addClass("map_normal");
+         
+          // Note: constructed panorama objects have visible: true
+          // set by default.
+          var panorama = new google.maps.StreetViewPanorama(
+              document.getElementById('map'), {
+                position: {lat: 42.345573, lng: -71.098326},
+                addressControlOptions: {
+                  position: google.maps.ControlPosition.LEFT_CENTER
+                },
+                linksControl: false,
+                panControl: false,
+                enableCloseButton: false
+          });
+        }
+
+        function initPanoEvent() {
+          // LAYOUT CONTROLL
+          $('#base').hide();
+          $('#stret-view-side-by-side').hide();
+          $('#stret_view_event').show()
+
+          // CLASS INITIATOR
+          $("#pano_3").addClass("panorama");
 
 
           var panorama = new google.maps.StreetViewPanorama(
-              document.getElementById('pano_view_2'), {
+              document.getElementById('pano_3'), {
                 position: {lat: 42.345573, lng: -71.098326},
                 pov: {
                   heading: 270,
@@ -261,7 +321,201 @@
               headingCell.firstChild.nodeValue = panorama.getPov().heading + '';
               pitchCell.firstChild.nodeValue = panorama.getPov().pitch + '';
           });
+
+
+      
+      }
+      var map;
+      var panorama;
+
+      function initDirectAccess() {
+        // LAYOUT CONTROLL
+        $('#base').hide();
+        $('#stret-view-side-by-side').show();
+        $('#stret_view_event').hide()
+
+        // CLASS INITIATOR
+        $("#map_2").addClass("panorama");
+        $("#pano_2").addClass("panorama");
+
+        var berkeley = {lat: 37.869085, lng: -122.254775};
+        var sv = new google.maps.StreetViewService();
+
+        panorama = new google.maps.StreetViewPanorama(document.getElementById('pano_2'));
+
+        // Set up the map.
+        map = new google.maps.Map(document.getElementById('map_2'), {
+          center: berkeley,
+          zoom: 16,
+          streetViewControl: false
+        });
+
+        // Set the initial Street View camera to the center of the map
+        sv.getPanorama({location: berkeley, radius: 50}, processSVData);
+
+        // Look for a nearby Street View panorama when the map is clicked.
+        // getPanorama will return the nearest pano when the given
+        // radius is 50 meters or less.
+        map.addListener('click', function(event) {
+          sv.getPanorama({location: event.latLng, radius: 50}, processSVData);
+        });
+      }
+
+      function processSVData(data, status) {
+        if (status === 'OK') {
+          var marker = new google.maps.Marker({
+            position: data.location.latLng,
+            map: map,
+            title: data.location.description
+          });
+
+          panorama.setPano(data.location.pano);
+          panorama.setPov({
+            heading: 270,
+            pitch: 0
+          });
+          panorama.setVisible(true);
+
+          marker.addListener('click', function() {
+            var markerPanoID = data.location.pano;
+            // Set the Pano to use the passed panoID.
+            panorama.setPano(markerPanoID);
+            panorama.setPov({
+              heading: 270,
+              pitch: 0
+            });
+            panorama.setVisible(true);
+          });
+        } else {
+          console.error('Street View data not found for this location.');
         }
+      }
+
+      function customPano() {
+         // LAYOUT CONTROLL
+        $('#base').show();
+        $('#stret-view-side-by-side').hide();
+        $('#stret_view_event').hide()
+
+        // CLASS INITIATOR
+        $("#map").addClass("map_normal");
+       
+        // Set up Street View and initially set it visible. Register the
+        // custom panorama provider function. Set the StreetView to display
+        // the custom panorama 'reception' which we check for below.
+        var panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('map'), {pano: 'reception', visible: true});
+        panorama.registerPanoProvider(getCustomPanorama);
+      }
+
+      // Return a pano image given the panoID.
+      function getCustomPanoramaTileUrl(pano, zoom, tileX, tileY) {
+        return 'https://developers.google.com/maps/documentation/javascript/examples/full/images/'
+            + 'panoReception1024-' + zoom + '-' + tileX + '-' + tileY + '.jpg';
+      }
+
+      // Construct the appropriate StreetViewPanoramaData given
+      // the passed pano IDs.
+      function getCustomPanorama(pano) {
+        if (pano === 'reception') {
+          return {
+            location: {
+              pano: 'reception',
+              description: 'Google Sydney - Reception'
+            },
+            links: [],
+            // The text for the copyright control.
+            copyright: 'Imagery (c) 2010 Google',
+            // The definition of the tiles for this panorama.
+            tiles: {
+              tileSize: new google.maps.Size(1024, 512),
+              worldSize: new google.maps.Size(2048, 1024),
+              // The heading in degrees at the origin of the panorama
+              // tile set.
+              centerHeading: 105,
+              getTileUrl: getCustomPanoramaTileUrl
+            }
+          };
+        }
+      }
+
+      var panorama;
+
+      // StreetViewPanoramaData of a panorama just outside the Google Sydney office.
+      var outsideGoogle;
+
+      // StreetViewPanoramaData for a custom panorama: the Google Sydney reception.
+      function getReceptionPanoramaData() {
+        return {
+          location: {
+            pano: 'reception',  // The ID for this custom panorama.
+            description: 'Google Sydney - Reception',
+            latLng: new google.maps.LatLng(-33.86684, 151.19583)
+          },
+          links: [{
+            heading: 195,
+            description: 'Exit',
+            pano: outsideGoogle.location.pano
+          }],
+          copyright: 'Imagery (c) 2010 Google',
+          tiles: {
+            tileSize: new google.maps.Size(1024, 512),
+            worldSize: new google.maps.Size(2048, 1024),
+            centerHeading: 105,
+            getTileUrl: function(pano, zoom, tileX, tileY) {
+              return 'https://developers.google.com/maps/documentation/javascript/examples/full/images/' +
+                  'panoReception1024-' + zoom + '-' + tileX + '-' + tileY + '.jpg';
+            }
+          }
+        };
+      }
+
+      function initPanorama() {
+        panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('map'),
+            {pano: outsideGoogle.location.pano});
+        // Register a provider for the custom panorama.
+        panorama.registerPanoProvider(function(pano) {
+          if (pano === 'reception') {
+            return getReceptionPanoramaData();
+          }
+          return null;
+        });
+
+        // Add a link to our custom panorama from outside the Google Sydney office.
+        panorama.addListener('links_changed', function() {
+          if (panorama.getPano() === outsideGoogle.location.pano) {
+            panorama.getLinks().push({
+              description: 'Google Sydney',
+              heading: 25,
+              pano: 'reception'
+            });
+          }
+        });
+      }
+
+      function initializeCustomStreetPano() {
+         // LAYOUT CONTROLL
+        $('#base').show();
+        $('#stret-view-side-by-side').show();
+        $('#stret_view_event').hide()
+
+        // CLASS INITIATOR
+        $("#map").addClass("map_normal");
+      
+        // Use the Street View service to find a pano ID on Pirrama Rd, outside the
+        // Google office.
+        var streetviewService = new google.maps.StreetViewService;
+        streetviewService.getPanorama(
+            {location: {lat: -33.867386, lng: 151.195767}},
+            function(result, status) {
+              if (status === 'OK') {
+                outsideGoogle = result;
+                initPanorama();
+              }
+            });
+      }
+    
 
 
 
